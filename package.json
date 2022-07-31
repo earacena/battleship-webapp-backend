@@ -1,0 +1,20 @@
+{
+  "name": "battleship-webapp-backend",
+  "version": "1.0.0",
+  "private": "true",
+  "description": "The backend of a Battleship game web application.",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/earacena/battleship-webapp-backend.git"
+  },
+  "author": "Emanuel Aracena Beriguete <earacenadev@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/earacena/battleship-webapp-backend/issues"
+  },
+  "homepage": "https://github.com/earacena/battleship-webapp-backend#readme"
+}
