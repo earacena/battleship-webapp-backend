@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./build/"
+  },
+  "extends": "@tsconfig/node16-strictest-esm/tsconfig.json",
+}
