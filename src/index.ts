@@ -4,7 +4,7 @@ import FastifyWebSocket from '@fastify/websocket';
 import socketRoutes from './connection';
 
 const app = fastify({
-  logger: true,
+  logger: false,
 });
 
 app.register(FastifyWebSocket);
