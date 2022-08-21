@@ -1,23 +1,24 @@
+import { v4 as uuidv4 } from 'uuid';
+
 import type { SocketStream } from '@fastify/websocket';
 import type { FastifyInstance } from 'fastify';
 
-const Clients: Map<number, SocketStream> = new Map<number, SocketStream>();
-let clientCount: number = 0;
+const Clients: Map<string, SocketStream> = new Map<string, SocketStream>();
 
-async function socketRoutes(fastify: FastifyInstance) {
-  fastify.get('/', { websocket: true }, (connection: SocketStream) => {
-    // Connection established, send user client an Id
-    const messageJSON: string = JSON.stringify({ type: 'id', message: `${clientCount}` });
-    Clients.set(clientCount, connection);
-    clientCount += 1;
-    console.log(`clients: ${Clients}, # of clients: ${clientCount}`);
-    Clients.forEach((_socket) => {
-      _socket.socket.send(JSON.stringify({ type: 'message', message: `${clientCount-1} has joined` }));
-    });
+class Connection {
+  id: string;
+  connection: SocketStream;
 
-    connection.socket.send(messageJSON);
+  constructor(connection: SocketStream) {
+    this.id = uuidv4();
+    this.connection = connection;
 
-    connection.socket.on('message', (message: string) => {
+    // Connection established
+    const messageJSON: string = JSON.stringify({ type: 'id', message: `${this.id}`});
+
+    this.connection.socket.send(messageJSON);
+
+    this.connection.socket.on('message', (message: string) => {
       if (message.toString() === 'hi from client') {
         console.log(message.toString());
         const response: string = JSON.stringify({
@@ -27,6 +28,19 @@ async function socketRoutes(fastify: FastifyInstance) {
         connection.socket.send(response);
       }
     });
+
+    this.connection.socket.on('close', () => {
+      Clients.delete(this.id);
+      console.log(`${this.id} disconnected`);
+    });
+  }
+};
+
+async function socketRoutes(fastify: FastifyInstance) {
+  fastify.get('/', { websocket: true }, (connection: SocketStream) => {
+    // Connection established, send user client an Id
+    const conn = new Connection(connection);
+    console.log(`user connected: ${conn.id}`);
   });
 }
 
