@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import type { SocketStream } from '@fastify/websocket';
-import type { FastifyInstance } from 'fastify';
 
 const Clients: Map<string, SocketStream> = new Map<string, SocketStream>();
 
@@ -14,7 +13,7 @@ class Connection {
     this.connection = connection;
 
     // Connection established
-    const messageJSON: string = JSON.stringify({ type: 'id', message: `${this.id}`});
+    const messageJSON: string = JSON.stringify({ type: 'id', message: `${this.id}` });
 
     this.connection.socket.send(messageJSON);
 
@@ -36,12 +35,4 @@ class Connection {
   }
 };
 
-async function socketRoutes(fastify: FastifyInstance) {
-  fastify.get('/', { websocket: true }, (connection: SocketStream) => {
-    // Connection established, send user client an Id
-    const conn = new Connection(connection);
-    console.log(`user connected: ${conn.id}`);
-  });
-}
-
-export default socketRoutes;
+export default Connection;

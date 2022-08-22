@@ -1,7 +1,7 @@
 
 import fastify from 'fastify';
 import FastifyWebSocket from '@fastify/websocket';
-import socketRoutes from './connection';
+import socketRoutes from './socketRoutes';
 
 const app = fastify({
   logger: false,
