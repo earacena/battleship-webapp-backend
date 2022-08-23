@@ -16,9 +16,10 @@ class Connection {
     this.connection = connection;
 
     // Connection established
-    const messageJSON: string = JSON.stringify({ type: 'id', message: `${this.id}` });
+    Clients.set(this.id, this.connection);
+    const messageJson: string = JSON.stringify({ type: 'id', message: `${this.id}` });
 
-    this.connection.socket.send(messageJSON);
+    this.connection.socket.send(messageJson);
 
     this.connection.socket.on('message', (data: Buffer) => {
       const message: any = JSON.parse(zString.parse(data.toString()));
@@ -34,8 +35,28 @@ class Connection {
             console.log(`current person next in line at queue: ${queue.front()}`);
 
             // Notify user that they were queued
-            const messageJSON: string = JSON.stringify({ type: 'queued user' });
-            this.connection.socket.send(messageJSON);
+            let messageJson: string = JSON.stringify({ type: 'queued user' });
+            this.connection.socket.send(messageJson);
+
+            // Check if there are enough people in the queue
+            let clientId1: string = '';
+            let clientId2: string = '';
+            while (queue.size() > 1) {
+              // Continuously pair the top two users
+              clientId1 = zString.parse(queue.dequeue());
+              clientId2 = zString.parse(queue.dequeue());
+              console.log(`pairing ${clientId1} and ${clientId2}`);
+
+              // Inform the users of their match partners
+              const clientSocket1 = Clients.get(clientId1);
+              const clientSocket2 = Clients.get(clientId2);
+
+              messageJson = JSON.stringify({ type: 'matched with user', message: clientId2 });
+              clientSocket1?.socket.send(messageJson);
+
+              messageJson = JSON.stringify({ type: 'matched with user', message: clientId1 });
+              clientSocket2?.socket.send(messageJson);
+            }
         };
       } else {
         console.error(`malformatted websocket message received: ${message}`)
