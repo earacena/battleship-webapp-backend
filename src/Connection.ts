@@ -5,6 +5,8 @@ import { zString, Message } from './connection.types';
 import Queue from './Queue';
 
 const Clients: Map<string, SocketStream> = new Map<string, SocketStream>();
+const Matches: Map<string, string> = new Map<string, string>();
+
 const queue: Queue = new Queue();
 
 class Connection {
@@ -56,7 +58,20 @@ class Connection {
 
               messageJson = JSON.stringify({ type: 'matched with user', message: clientId1 });
               clientSocket2?.socket.send(messageJson);
+
+              Matches.set(clientId1, clientId2);
+              Matches.set(clientId2, clientId1);
             }
+            break;
+          case 'ready':
+            // Client is done editing their board
+            // Signal their opponent
+            const opponentId = zString.parse(Matches.get(this.id));
+            const opponentSocket = Clients.get(opponentId);
+
+            const opponentReadyMessageJson: string = JSON.stringify({ type: 'opponent is ready' });
+            opponentSocket?.socket.send(opponentReadyMessageJson);
+            break;
         };
       } else {
         console.error(`malformatted websocket message received: ${message}`)
@@ -65,6 +80,14 @@ class Connection {
 
     this.connection.socket.on('close', () => {
       Clients.delete(this.id);
+
+      // Unmatch opponents
+      if (Matches.has(this.id)) {
+        const opponentId = zString.parse(Matches.get(this.id));
+        Matches.delete(this.id);
+        Matches.delete(opponentId);
+      }
+      
       console.log(`${this.id} disconnected`);
     });
   }
