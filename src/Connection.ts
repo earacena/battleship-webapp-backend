@@ -84,6 +84,11 @@ class Connection {
       // Unmatch opponents
       if (Matches.has(this.id)) {
         const opponentId = zString.parse(Matches.get(this.id));
+        const opponentSocket = Clients.get(opponentId);
+
+        const opponentDisconnectedMessageJson: string = JSON.stringify({ type: 'opponent disconnected' });
+        opponentSocket?.socket.send(opponentDisconnectedMessageJson);
+
         Matches.delete(this.id);
         Matches.delete(opponentId);
       }
