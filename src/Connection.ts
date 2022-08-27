@@ -9,6 +9,8 @@ const MatchInfo = z.object({
   opponentId: z.string(),
   playerTurn: z.string(),
   matchTurn: z.string(),
+  playerScore: z.number(),
+  opponentScore: z.number(),
 });
 
 type MatchInfoType = z.infer<typeof MatchInfo>;
@@ -86,11 +88,15 @@ class Connection {
                   opponentId: clientId2,
                   playerTurn: "first",
                   matchTurn: "first",
+                  playerScore: 0,
+                  opponentScore: 0,
                 });
                 Matches.set(clientId2, {
                   opponentId: clientId1,
                   playerTurn: "second",
                   matchTurn: "first",
+                  playerScore: 0,
+                  opponentScore: 0,
                 });
 
                 // Inform users of their turn order
@@ -163,8 +169,8 @@ class Connection {
                 })
               );
 
-              // Switch turns
-              const matchInfo = MatchInfo.parse(Matches.get(this.id));
+              // Switch turns and update score
+              let matchInfo = MatchInfo.parse(Matches.get(this.id));
               const opponentMatchInfo = MatchInfo.parse(
                 Matches.get(opponentId)
               );
@@ -177,11 +183,19 @@ class Connection {
               this.connection.socket.send(
                 JSON.stringify({ type: "turn", turn: newTurn })
               );
-              Matches.set(this.id, { ...matchInfo, matchTurn: newTurn });
+              Matches.set(this.id, { ...matchInfo, matchTurn: newTurn, opponentScore: matchInfo.opponentScore + 1 });
               Matches.set(opponentId, {
                 ...opponentMatchInfo,
                 matchTurn: newTurn,
+                playerScore: opponentMatchInfo.playerScore + 1,
               });
+
+              // Announce winner if player score reaches 17
+              matchInfo = MatchInfo.parse(Matches.get(this.id));
+              if (matchInfo.opponentScore === 17) {
+                this.connection.socket.send(JSON.stringify({ type: 'announce winner', winner: opponentId, loser: this.id }));
+                opponentSocket?.socket.send(JSON.stringify({ type: 'announce winner', winner: opponentId, loser: this.id }));
+              }
             }
             break;
           case "report miss":
