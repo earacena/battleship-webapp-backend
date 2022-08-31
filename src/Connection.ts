@@ -243,6 +243,7 @@ class Connection {
 
     this.connection.socket.on("close", () => {
       Clients.delete(this.id);
+      queue.remove(this.id);
 
       // Unmatch opponents
       if (Matches.has(this.id)) {
