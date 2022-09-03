@@ -5,10 +5,10 @@
   "description": "The backend of a Battleship game web application.",
   "main": "index.ts",
   "scripts": {
-    "tsc": "tsc",
     "lint": "eslint . --ext .ts",
     "dev": "NODE_ENV=development ts-node-dev src/index.ts",
-    "start": "node build/index.js"
+    "start": "node build/index.js",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
