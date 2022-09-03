@@ -8,6 +8,7 @@
     "lint": "eslint . --ext .ts",
     "dev": "NODE_ENV=development ts-node-dev src/index.ts",
     "start": "node build/index.js",
+    "build:ui": "rm -rf build_frontend && cd ../battleship-webapp-frontend && npm run build && cp -r build/ ../battleship-webapp-backend/build_frontend && cd ../battleship-webapp-backend",
     "build": "tsc"
   },
   "repository": {
