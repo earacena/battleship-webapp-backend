@@ -15,7 +15,7 @@ app.get('/healthz', (_request: FastifyRequest, reply: FastifyReply) => {
   reply.code(200);
 });
 
-app.listen({ port: 8080 }, (error, address) => {
+app.listen({ port: 10000 }, (error, address) => {
   if (error) {
     console.error(error);
     process.exit(1);
