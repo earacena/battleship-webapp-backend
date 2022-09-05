@@ -11,8 +11,7 @@ app.register(FastifyWebSocket);
 app.register(socketRoutes);
 
 // Deployment health ping
-app.get('/healthz', (_request: FastifyRequest, reply: FastifyReply) => {
-  reply.code(200);
+app.get('/healthz', (_request: FastifyRequest, _reply: FastifyReply) => {
 });
 
 app.listen({ port: 10000 }, (error, address) => {
