@@ -1,5 +1,5 @@
 
-import fastify from 'fastify';
+import fastify, { FastifyReply, FastifyRequest } from 'fastify';
 import FastifyWebSocket from '@fastify/websocket';
 import socketRoutes from './socketRoutes';
 
@@ -9,6 +9,11 @@ const app = fastify({
 
 app.register(FastifyWebSocket);
 app.register(socketRoutes);
+
+// Deployment health ping
+app.get('/healthz', (_request: FastifyRequest, reply: FastifyReply) => {
+  reply.code(200);
+});
 
 app.listen({ port: 8080 }, (error, address) => {
   if (error) {
