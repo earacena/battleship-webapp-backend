@@ -3,6 +3,8 @@
 ## Description
 The backend of a Battleship game web application written in Typescript.
 
+The frontend of this project is found [here](https://github.com/earacena/battleship-webapp-frontend).
+
 ### Technologies
   * Typescript
   * PostgreSQL
